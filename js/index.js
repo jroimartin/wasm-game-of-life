@@ -1,2 +1,1 @@
-import("../pkg/index.js").catch(console.error);
-import "./game.js";
+import("./main.js").catch(console.error);

@@ -29,7 +29,8 @@ module.exports = {
 
     new WasmPackPlugin({
       crateDirectory: __dirname,
-      extraArgs: '--no-pack',
+      extraArgs: "--no-pack",
+      outName: "wasm_game_of_life",
     }),
   ]
 };
