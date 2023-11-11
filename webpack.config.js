@@ -4,9 +4,9 @@ const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 
 module.exports = {
   mode: "development",
-  context: __dirname,
+  context: path.resolve(__dirname, "js"),
   entry: {
-    index: "./js/index.js",
+    index: "./index.js",
   },
   output: {
     path: path.resolve(__dirname, "dist"),

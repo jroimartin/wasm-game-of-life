@@ -74,8 +74,6 @@ const getIndex = (row, column) => {
   return row * width + column;
 };
 
-export const game = () => {
-  drawGrid();
-  drawCell();
-  requestAnimationFrame(renderLoop);
-}
+drawGrid();
+drawCell();
+requestAnimationFrame(renderLoop);
