@@ -1,7 +1,7 @@
 use js_sys::Math;
 use wasm_bindgen::prelude::*;
 
-pub enum CellState {
+pub enum Cell {
     Dead,
     Alive,
 }
@@ -22,20 +22,20 @@ impl Universe {
         (nbyte, nbit)
     }
 
-    fn cell(&self, row: usize, column: usize) -> CellState {
+    fn cell(&self, row: usize, column: usize) -> Cell {
         let (nbyte, nbit) = self.get_index(row, column);
         if (self.cells[nbyte] >> nbit) & 1 == 1 {
-            CellState::Alive
+            Cell::Alive
         } else {
-            CellState::Dead
+            Cell::Dead
         }
     }
 
-    fn set_cell(&mut self, row: usize, column: usize, state: CellState) {
+    fn set_cell(&mut self, row: usize, column: usize, cell: Cell) {
         let (nbyte, nbit) = self.get_index(row, column);
-        match state {
-            CellState::Alive => self.cells[nbyte] |= 1 << nbit,
-            CellState::Dead => self.cells[nbyte] &= !(1 << nbit),
+        match cell {
+            Cell::Alive => self.cells[nbyte] |= 1 << nbit,
+            Cell::Dead => self.cells[nbyte] &= !(1 << nbit),
         }
     }
 
@@ -49,8 +49,8 @@ impl Universe {
                 let neighbor_row = (row + delta_row) % self.height;
                 let neighbor_col = (column + delta_col) % self.width;
                 match self.cell(neighbor_row, neighbor_col) {
-                    CellState::Alive => count += 1,
-                    CellState::Dead => {}
+                    Cell::Alive => count += 1,
+                    Cell::Dead => {}
                 }
             }
         }
@@ -92,10 +92,10 @@ impl Universe {
                 let cell = prev.cell(row, col);
                 let live_neighbors = prev.live_neighbor_count(row, col);
                 let next_cell = match (cell, live_neighbors) {
-                    (CellState::Alive, ..=1) => CellState::Dead,
-                    (CellState::Alive, 2..=3) => CellState::Alive,
-                    (CellState::Alive, 4..) => CellState::Dead,
-                    (CellState::Dead, 3) => CellState::Alive,
+                    (Cell::Alive, ..=1) => Cell::Dead,
+                    (Cell::Alive, 2..=3) => Cell::Alive,
+                    (Cell::Alive, 4..) => Cell::Dead,
+                    (Cell::Dead, 3) => Cell::Alive,
                     (state, _) => state,
                 };
                 self.set_cell(row, col, next_cell);
