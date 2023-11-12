@@ -108,8 +108,12 @@ impl Universe {
         self.width
     }
 
-    pub fn cells(&self) -> *const u8 {
+    pub fn cells_ptr(&self) -> *const u8 {
         self.cells.as_ptr()
+    }
+
+    pub fn cells_len(&self) -> usize {
+        self.cells.len()
     }
 }
 

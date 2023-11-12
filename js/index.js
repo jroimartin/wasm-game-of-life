@@ -51,8 +51,9 @@ const drawGrid = () => {
 };
 
 const drawCell = () => {
-  const cellsPtr = universe.cells();
-  const cells = new Uint8Array(memory.buffer, cellsPtr, Math.floor((UNIVERSE_WIDTH * UNIVERSE_HEIGHT + 7) / 8));
+  const cellsPtr = universe.cells_ptr();
+  const cellsLen = universe.cells_len();
+  const cells = new Uint8Array(memory.buffer, cellsPtr, cellsLen);
 
   ctx.beginPath();
 
