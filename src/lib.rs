@@ -35,7 +35,7 @@ impl Universe {
     pub fn cells(&self) -> Vec<Cell> {
         self.cells
             .iter()
-            .map(|b| {
+            .flat_map(|b| {
                 (0..8).map(|i| {
                     if (*b >> i) & 1 == 1 {
                         Cell::Alive
@@ -44,7 +44,6 @@ impl Universe {
                     }
                 })
             })
-            .flatten()
             .take(self.width * self.height)
             .collect()
     }
