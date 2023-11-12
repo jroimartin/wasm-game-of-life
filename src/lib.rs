@@ -60,11 +60,8 @@ impl Universe {
 
 #[wasm_bindgen]
 impl Universe {
-    pub fn new() -> Universe {
-        const WIDTH: usize = 136;
-        const HEIGHT: usize = 48;
-
-        let size = (WIDTH * HEIGHT + 7) / 8;
+    pub fn new(width: usize, height: usize) -> Universe {
+        let size = (width * height + 7) / 8;
         let cells = (0..size)
             .map(|_| {
                 (0..8).fold(0, |acc, i| {
@@ -78,8 +75,8 @@ impl Universe {
             .collect();
 
         Universe {
-            width: WIDTH,
-            height: HEIGHT,
+            width,
+            height,
             cells,
         }
     }
