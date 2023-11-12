@@ -15,79 +15,12 @@ fn universe_set_cells() {
 
 #[test]
 fn universe_tick() {
-    let mut uni = Universe::new(5, 5);
-    uni.set_cells(&[(1, 2), (2, 2), (3, 2)], Cell::Alive);
-    assert_eq!(
-        uni.cells(),
-        [
-            // Row 0.
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            // Row 1.
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Alive,
-            Cell::Dead,
-            Cell::Dead,
-            // Row 2.
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Alive,
-            Cell::Dead,
-            Cell::Dead,
-            // Row 3.
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Alive,
-            Cell::Dead,
-            Cell::Dead,
-            // Row 4.
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-        ]
-    );
-    uni.tick();
-    assert_eq!(
-        uni.cells(),
-        [
-            // Row 0.
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            // Row 1.
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            // Row 2.
-            Cell::Dead,
-            Cell::Alive,
-            Cell::Alive,
-            Cell::Alive,
-            Cell::Dead,
-            // Row 3.
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            // Row 4.
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-            Cell::Dead,
-        ]
-    );
+    let mut universe = Universe::new(5, 5);
+    universe.set_cells(&[(1, 2), (2, 2), (3, 2)], Cell::Alive);
+    universe.tick();
+    let mut expected_universe = Universe::new(5, 5);
+    expected_universe.set_cells(&[(2, 1), (2, 2), (2, 3)], Cell::Alive);
+    assert_eq!(universe.cells(), expected_universe.cells());
 }
 
 #[wasm_bindgen_test]
