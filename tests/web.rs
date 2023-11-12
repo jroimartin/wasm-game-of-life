@@ -13,7 +13,7 @@ fn universe_set_cells() {
     );
 }
 
-#[test]
+#[wasm_bindgen_test]
 fn universe_tick() {
     let mut universe = Universe::new(5, 5);
     universe.set_cells(&[(1, 2), (2, 2), (3, 2)], Cell::Alive);
@@ -21,9 +21,4 @@ fn universe_tick() {
     let mut expected_universe = Universe::new(5, 5);
     expected_universe.set_cells(&[(2, 1), (2, 2), (2, 3)], Cell::Alive);
     assert_eq!(universe.cells(), expected_universe.cells());
-}
-
-#[wasm_bindgen_test]
-fn it_works() {
-    assert_eq!(1, 1)
 }
