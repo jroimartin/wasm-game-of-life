@@ -1,40 +1,57 @@
+use js_sys::Math;
 use wasm_bindgen::prelude::*;
-use web_sys::console;
 
-#[wasm_bindgen]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[repr(u8)]
-pub enum Cell {
-    Dead = 0,
-    Alive = 1,
+pub enum CellState {
+    Dead,
+    Alive,
 }
 
 #[wasm_bindgen]
+#[derive(Clone)]
 pub struct Universe {
-    width: u32,
-    height: u32,
-    cells: Vec<Cell>,
+    width: usize,
+    height: usize,
+    cells: Vec<u8>,
 }
 
 impl Universe {
-    const WIDTH: u32 = 136;
-    const HEIGHT: u32 = 48;
-
-    fn get_index(&self, row: u32, column: u32) -> usize {
-        (row * self.width + column) as usize
+    fn get_index(&self, row: usize, column: usize) -> (usize, usize) {
+        let idx = row * self.width + column;
+        let nbyte = idx / 8;
+        let nbit = idx % 8;
+        (nbyte, nbit)
     }
 
-    fn live_neighbor_count(&self, row: u32, column: u32) -> u8 {
+    fn cell(&self, row: usize, column: usize) -> CellState {
+        let (nbyte, nbit) = self.get_index(row, column);
+        if (self.cells[nbyte] >> nbit) & 1 == 1 {
+            CellState::Alive
+        } else {
+            CellState::Dead
+        }
+    }
+
+    fn set_cell(&mut self, row: usize, column: usize, state: CellState) {
+        let (nbyte, nbit) = self.get_index(row, column);
+        match state {
+            CellState::Alive => self.cells[nbyte] |= 1 << nbit,
+            CellState::Dead => self.cells[nbyte] &= !(1 << nbit),
+        }
+    }
+
+    fn live_neighbor_count(&self, row: usize, column: usize) -> u8 {
         let mut count = 0;
         for &delta_row in [self.height - 1, 0, 1].iter() {
-            for &delta_column in [self.width - 1, 0, 1].iter() {
-                if delta_row == 0 && delta_column == 0 {
+            for &delta_col in [self.width - 1, 0, 1].iter() {
+                if delta_row == 0 && delta_col == 0 {
                     continue;
                 }
                 let neighbor_row = (row + delta_row) % self.height;
-                let neighbor_column = (column + delta_column) % self.width;
-                let idx = self.get_index(neighbor_row, neighbor_column);
-                count += self.cells[idx] as u8;
+                let neighbor_col = (column + delta_col) % self.width;
+                match self.cell(neighbor_row, neighbor_col) {
+                    CellState::Alive => count += 1,
+                    CellState::Dead => {}
+                }
             }
         }
         count
@@ -44,54 +61,57 @@ impl Universe {
 #[wasm_bindgen]
 impl Universe {
     pub fn new() -> Universe {
-        let cells = (0..Self::WIDTH * Self::HEIGHT)
-            .map(|i| {
-                if i % 2 == 0 || i % 7 == 0 {
-                    Cell::Alive
-                } else {
-                    Cell::Dead
-                }
+        const WIDTH: usize = 136;
+        const HEIGHT: usize = 48;
+
+        let size = (WIDTH * HEIGHT + 7) / 8;
+        let cells = (0..size)
+            .map(|_| {
+                (0..8).fold(0, |acc, i| {
+                    if Math::random() < 0.5 {
+                        acc | (1 << i)
+                    } else {
+                        acc
+                    }
+                })
             })
             .collect();
 
         Universe {
-            width: Self::WIDTH,
-            height: Self::HEIGHT,
+            width: WIDTH,
+            height: HEIGHT,
             cells,
         }
     }
 
     pub fn tick(&mut self) {
-        let mut next = self.cells.clone();
+        let prev = self.clone();
 
         for row in 0..self.height {
-            for column in 0..self.width {
-                let idx = self.get_index(row, column);
-                let cell = self.cells[idx];
-                let live_neighbors = self.live_neighbor_count(row, column);
+            for col in 0..self.width {
+                let cell = prev.cell(row, col);
+                let live_neighbors = prev.live_neighbor_count(row, col);
                 let next_cell = match (cell, live_neighbors) {
-                    (Cell::Alive, ..=1) => Cell::Dead,
-                    (Cell::Alive, 2..=3) => Cell::Alive,
-                    (Cell::Alive, 4..) => Cell::Dead,
-                    (Cell::Dead, 3) => Cell::Alive,
+                    (CellState::Alive, ..=1) => CellState::Dead,
+                    (CellState::Alive, 2..=3) => CellState::Alive,
+                    (CellState::Alive, 4..) => CellState::Dead,
+                    (CellState::Dead, 3) => CellState::Alive,
                     (state, _) => state,
                 };
-                next[idx] = next_cell;
+                self.set_cell(row, col, next_cell);
             }
         }
-
-        self.cells = next;
     }
 
-    pub fn height(&self) -> u32 {
+    pub fn height(&self) -> usize {
         self.height
     }
 
-    pub fn width(&self) -> u32 {
+    pub fn width(&self) -> usize {
         self.width
     }
 
-    pub fn cells(&self) -> *const Cell {
+    pub fn cells(&self) -> *const u8 {
         self.cells.as_ptr()
     }
 }
@@ -100,8 +120,5 @@ impl Universe {
 pub fn main_js() -> Result<(), JsValue> {
     #[cfg(debug_assertions)]
     console_error_panic_hook::set_once();
-
-    console::log_1(&JsValue::from_str("wasm-game-of-life started"));
-
     Ok(())
 }
