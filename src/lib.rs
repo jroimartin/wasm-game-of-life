@@ -1,6 +1,7 @@
 use js_sys::Math;
 use wasm_bindgen::prelude::*;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Cell {
     Dead,
     Alive,
@@ -22,7 +23,7 @@ impl Universe {
         (nbyte, nbit)
     }
 
-    fn cell(&self, row: usize, column: usize) -> Cell {
+    pub fn cell(&self, row: usize, column: usize) -> Cell {
         let (nbyte, nbit) = self.get_index(row, column);
         if (self.cells[nbyte] >> nbit) & 1 == 1 {
             Cell::Alive
@@ -31,12 +32,35 @@ impl Universe {
         }
     }
 
-    fn set_cell(&mut self, row: usize, column: usize, cell: Cell) {
+    pub fn cells(&self) -> Vec<Cell> {
+        self.cells
+            .iter()
+            .map(|b| {
+                (0..8).map(|i| {
+                    if (*b >> i) & 1 == 1 {
+                        Cell::Alive
+                    } else {
+                        Cell::Dead
+                    }
+                })
+            })
+            .flatten()
+            .take(self.width * self.height)
+            .collect()
+    }
+
+    pub fn set_cell(&mut self, row: usize, column: usize, cell: Cell) {
         let (nbyte, nbit) = self.get_index(row, column);
         match cell {
             Cell::Alive => self.cells[nbyte] |= 1 << nbit,
             Cell::Dead => self.cells[nbyte] &= !(1 << nbit),
         }
+    }
+
+    pub fn set_cells(&mut self, coords: &[(usize, usize)], cell: Cell) {
+        coords
+            .iter()
+            .for_each(|&(row, col)| self.set_cell(row, col, cell))
     }
 
     fn live_neighbor_count(&self, row: usize, column: usize) -> u8 {
@@ -62,28 +86,27 @@ impl Universe {
 impl Universe {
     pub fn new(width: usize, height: usize) -> Universe {
         let size = (width * height + 7) / 8;
-        let cells = (0..size)
-            .map(|_| {
-                (0..8).fold(0, |acc, i| {
-                    if Math::random() < 0.5 {
-                        acc | (1 << i)
-                    } else {
-                        acc
-                    }
-                })
-            })
-            .collect();
-
         Universe {
             width,
             height,
-            cells,
+            cells: vec![0u8; size],
+        }
+    }
+
+    pub fn init(&mut self) {
+        for b in self.cells.iter_mut() {
+            *b = (0..8).fold(*b, |acc, i| {
+                if Math::random() < 0.5 {
+                    acc | (1 << i)
+                } else {
+                    acc
+                }
+            });
         }
     }
 
     pub fn tick(&mut self) {
         let prev = self.clone();
-
         for row in 0..self.height {
             for col in 0..self.width {
                 let cell = prev.cell(row, col);

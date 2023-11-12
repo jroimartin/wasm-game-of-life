@@ -10,6 +10,7 @@ const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
 
 const universe = Universe.new(UNIVERSE_WIDTH, UNIVERSE_HEIGHT);
+universe.init();
 
 const canvas_height = (CELL_SIZE + 1) * UNIVERSE_HEIGHT + 1;
 const canvas_width = (CELL_SIZE + 1) * UNIVERSE_WIDTH + 1;
