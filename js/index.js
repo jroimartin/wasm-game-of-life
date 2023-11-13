@@ -10,7 +10,6 @@ const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
 
 const universe = Universe.new(UNIVERSE_WIDTH, UNIVERSE_HEIGHT);
-universe.init();
 
 const canvas = document.getElementById("game-of-life");
 const canvasHeight = (CELL_SIZE + 1) * UNIVERSE_HEIGHT + 1;
@@ -117,7 +116,10 @@ const getIndex = (row, column) => {
   }
 };
 
-drawGrid();
 playPauseButton.addEventListener("click", toggleAnimation);
 initButton.addEventListener("click", initUniverse);
 clearButton.addEventListener("click", clearUniverse);
+
+universe.init();
+drawGrid();
+drawCell();
