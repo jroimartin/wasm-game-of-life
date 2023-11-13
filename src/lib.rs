@@ -143,5 +143,15 @@ impl Universe {
 pub fn main_js() -> Result<(), JsValue> {
     #[cfg(debug_assertions)]
     console_error_panic_hook::set_once();
+
+    log!("wasm-game-of-life");
+
     Ok(())
+}
+
+#[macro_export]
+macro_rules! log {
+    ($($args:tt)*) => {
+        web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!($($args)*)))
+    };
 }
