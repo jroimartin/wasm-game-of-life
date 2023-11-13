@@ -2,7 +2,7 @@ body {
   margin: 16px auto;
 }
 
-#play-pause, #init, #clear {
+#play-pause, #tick, #init, #clear {
   font-size: 1.5em;
   border: none;
   background-color: transparent;

@@ -7,6 +7,15 @@ pub enum Cell {
     Alive,
 }
 
+impl Cell {
+    fn toggle(self) -> Cell {
+        match self {
+            Cell::Dead => Cell::Alive,
+            Cell::Alive => Cell::Dead,
+        }
+    }
+}
+
 #[wasm_bindgen]
 #[derive(Clone)]
 pub struct Universe {
@@ -92,7 +101,7 @@ impl Universe {
         }
     }
 
-    pub fn init(&mut self) {
+    pub fn init_random(&mut self) {
         for b in self.cells.iter_mut() {
             *b = (0..8).fold(*b, |acc, i| {
                 if Math::random() < 0.5 {
@@ -106,6 +115,11 @@ impl Universe {
 
     pub fn clear(&mut self) {
         self.cells.fill(0);
+    }
+
+    pub fn toggle_cell(&mut self, row: usize, column: usize) {
+        let cell = self.cell(row, column);
+        self.set_cell(row, column, cell.toggle());
     }
 
     pub fn tick(&mut self) {
