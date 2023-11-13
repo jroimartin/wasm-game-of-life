@@ -2,10 +2,16 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
     <title>wasm-game-of-life</title>
   </head>
   <body>
     <script src="index.js"></script>
-    <canvas id="game-of-life-canvas"></canvas>
+    <div id="controls">
+      <button id="play-pause">▶️</button>
+      <button id="init">🔀</button>
+      <button id="clear">🆑</button>
+    </div>
+    <canvas id="game-of-life"></canvas>
   </body>
 </html>

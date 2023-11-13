@@ -104,6 +104,10 @@ impl Universe {
         }
     }
 
+    pub fn clear(&mut self) {
+        self.cells.fill(0);
+    }
+
     pub fn tick(&mut self) {
         let prev = self.clone();
         for row in 0..self.height {

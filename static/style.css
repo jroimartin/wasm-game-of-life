@@ -1,0 +1,20 @@
+body {
+  margin: 16px auto;
+}
+
+#play-pause, #init, #clear {
+  font-size: 1.5em;
+  border: none;
+  background-color: transparent;
+}
+
+#controls {
+  display: block;
+  margin: 16px auto;
+  text-align: center;
+}
+
+#game-of-life {
+  display: block;
+  margin: 16px auto;
+}
