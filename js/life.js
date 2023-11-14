@@ -29,7 +29,7 @@ export class GameOfLife {
 
     this.#universe = Universe.new(this.#universeWidth, this.#universeHeight);
     this.#animationId = null;
-    
+
     this.#playPauseButton = document.getElementById("play-pause");
     this.#tickButton = document.getElementById("tick");
     this.#initButton = document.getElementById("init");
