@@ -9,32 +9,22 @@ const ALIVE_COLOR = "#000000";
 export class GameOfLife {
   #universeWidth;
   #universeHeight;
-  #canvasWidth;
-  #canvasHeight;
+  #gui;
 
   #universe;
   #animationId;
+  #canvasWidth;
+  #canvasHeight;
 
-  #playPauseButton;
-  #tickButton;
-  #initButton;
-  #clearButton;
-  #canvas;
-
-  constructor(width, height) {
+  constructor(width, height, gui) {
     this.#universeWidth = width;
     this.#universeHeight = height;
-    this.#canvasWidth = (CELL_SIZE + 1) * this.#universeWidth + 1;
-    this.#canvasHeight = (CELL_SIZE + 1) * this.#universeHeight + 1;
+    this.#gui = gui;
 
     this.#universe = Universe.new(this.#universeWidth, this.#universeHeight);
     this.#animationId = null;
-
-    this.#playPauseButton = document.getElementById("play-pause");
-    this.#tickButton = document.getElementById("tick");
-    this.#initButton = document.getElementById("init");
-    this.#clearButton = document.getElementById("clear");
-    this.#canvas = document.getElementById("game-of-life");
+    this.#canvasWidth = (CELL_SIZE + 1) * this.#universeWidth + 1;
+    this.#canvasHeight = (CELL_SIZE + 1) * this.#universeHeight + 1;
   }
 
   init() {
@@ -43,16 +33,16 @@ export class GameOfLife {
   }
 
   #initEventListeners() {
-    this.#playPauseButton.addEventListener("click", () => this.#toggleAnimation());
-    this.#tickButton.addEventListener("click", () => this.#tickUniverse());
-    this.#initButton.addEventListener("click", () => this.#initUniverse());
-    this.#clearButton.addEventListener("click", () => this.#clearUniverse());
-    this.#canvas.addEventListener("click", (ev) => this.#toggleCell(ev));
+    this.#gui.playPauseButton.addEventListener("click", () => this.#toggleAnimation());
+    this.#gui.tickButton.addEventListener("click", () => this.#tickUniverse());
+    this.#gui.initButton.addEventListener("click", () => this.#initUniverse());
+    this.#gui.clearButton.addEventListener("click", () => this.#clearUniverse());
+    this.#gui.canvas.addEventListener("click", (ev) => this.#toggleCell(ev));
   }
 
   #initCanvas() {
-    this.#canvas.height = this.#canvasHeight;
-    this.#canvas.width = this.#canvasWidth;
+    this.#gui.canvas.height = this.#canvasHeight;
+    this.#gui.canvas.width = this.#canvasWidth;
     this.#drawGrid();
     this.#initUniverse();
   }
@@ -70,13 +60,13 @@ export class GameOfLife {
 
   #play() {
     this.#renderLoop();
-    this.#playPauseButton.innerHTML = "⏸️";
+    this.#gui.playPauseButton.innerHTML = "⏸️";
   }
 
   #pause() {
     cancelAnimationFrame(this.#animationId);
     this.#animationId = null;
-    this.#playPauseButton.innerHTML = "▶️";
+    this.#gui.playPauseButton.innerHTML = "▶️";
   }
 
   #toggleAnimation() {
@@ -92,7 +82,7 @@ export class GameOfLife {
   }
 
   #toggleCell(event) {
-    const rect = this.#canvas.getBoundingClientRect();
+    const rect = this.#gui.canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
@@ -145,7 +135,7 @@ export class GameOfLife {
   }
 
   #drawGrid() {
-    const ctx = this.#canvas.getContext("2d");
+    const ctx = this.#gui.canvas.getContext("2d");
 
     ctx.beginPath();
     ctx.strokeStyle = GRID_COLOR;
@@ -172,7 +162,7 @@ export class GameOfLife {
     const cellsLen = this.#universe.cells_len();
     const cells = new Uint8Array(memory.buffer, cellsPtr, cellsLen);
 
-    const ctx = this.#canvas.getContext("2d");
+    const ctx = this.#gui.canvas.getContext("2d");
 
     ctx.beginPath();
 
@@ -197,5 +187,21 @@ export class GameOfLife {
       nbyte: Math.floor(idx / 8),
       nbit: idx % 8,
     }
+  }
+}
+
+export class Gui {
+  canvas;
+  playPauseButton;
+  tickButton;
+  initButton;
+  clearButton;
+
+  constructor(canvas, playPauseButton, tickButton, initButton, clearButton) {
+    this.canvas = canvas;
+    this.playPauseButton = playPauseButton;
+    this.tickButton = tickButton;
+    this.initButton = initButton;
+    this.clearButton = clearButton;
   }
 }

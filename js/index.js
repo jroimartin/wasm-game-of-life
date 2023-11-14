@@ -1,7 +1,15 @@
-import {GameOfLife} from "./life.js";
+import {GameOfLife, Gui} from "./life.js";
 
 const UNIVERSE_WIDTH = 64;
 const UNIVERSE_HEIGHT = 64;
 
-const life = new GameOfLife(UNIVERSE_WIDTH, UNIVERSE_HEIGHT);
+const gui = new Gui(
+  document.getElementById("game-of-life"),
+  document.getElementById("play-pause"),
+  document.getElementById("tick"),
+  document.getElementById("init"),
+  document.getElementById("clear"),
+);
+
+const life = new GameOfLife(UNIVERSE_WIDTH, UNIVERSE_HEIGHT, gui);
 life.init()
