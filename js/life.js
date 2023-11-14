@@ -6,6 +6,48 @@ const GRID_COLOR = "#CCCCCC";
 const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
 
+class Fps {
+  #fps;
+  #frames;
+  #lastFrameTimestamp;
+
+  constructor(fps) {
+    this.#fps = fps;
+    this.#frames = [];
+    this.#lastFrameTimestamp = performance.now();
+  }
+
+  render() {
+    const now = performance.now();
+    const delta = now - this.#lastFrameTimestamp;
+    this.#lastFrameTimestamp = now;
+    const fps = 1 / delta * 1000;
+
+    this.#frames.push(fps);
+    if (this.#frames.length > 100) {
+      this.#frames.shift();
+    }
+
+    let min = Infinity;
+    let max = -Infinity;
+    let sum = 0;
+    for (let i = 0; i < this.#frames.length; i++) {
+      sum += this.#frames[i];
+      min = Math.min(this.#frames[i], min);
+      max = Math.max(this.#frames[i], max);
+    }
+    let mean = sum / this.#frames.length;
+
+    this.#fps.textContent = `
+Frames per second:
+         latest = ${Math.round(fps)}
+avg of last 100 = ${Math.round(mean)}
+min of last 100 = ${Math.round(min)}
+max of last 100 = ${Math.round(max)}
+`.trim();
+  }
+}
+
 export class GameOfLife {
   #universeWidth;
   #universeHeight;
@@ -13,6 +55,7 @@ export class GameOfLife {
 
   #universe;
   #animationId;
+  #fps;
   #canvasWidth;
   #canvasHeight;
 
@@ -23,6 +66,7 @@ export class GameOfLife {
 
     this.#universe = Universe.new(this.#universeWidth, this.#universeHeight);
     this.#animationId = null;
+    this.#fps = new Fps(gui.fps);
     this.#canvasWidth = (CELL_SIZE + 1) * this.#universeWidth + 1;
     this.#canvasHeight = (CELL_SIZE + 1) * this.#universeHeight + 1;
   }
@@ -130,6 +174,7 @@ export class GameOfLife {
   }
 
   #renderLoop() {
+    this.#fps.render();
     this.#tickUniverse();
     this.#animationId = requestAnimationFrame(() => this.#renderLoop());
   }
@@ -196,12 +241,14 @@ export class Gui {
   tickButton;
   initButton;
   clearButton;
+  fps;
 
-  constructor(canvas, playPauseButton, tickButton, initButton, clearButton) {
+  constructor(canvas, playPauseButton, tickButton, initButton, clearButton, fps) {
     this.canvas = canvas;
     this.playPauseButton = playPauseButton;
     this.tickButton = tickButton;
     this.initButton = initButton;
     this.clearButton = clearButton;
+    this.fps = fps;
   }
 }

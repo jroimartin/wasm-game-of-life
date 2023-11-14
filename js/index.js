@@ -9,6 +9,7 @@ const gui = new Gui(
   document.getElementById("tick"),
   document.getElementById("init"),
   document.getElementById("clear"),
+  document.getElementById("fps"),
 );
 
 const life = new GameOfLife(UNIVERSE_WIDTH, UNIVERSE_HEIGHT, gui);

@@ -1,11 +1,6 @@
 body {
   margin: 16px auto;
-}
-
-#play-pause, #tick, #init, #clear {
-  font-size: 1.5em;
-  border: none;
-  background-color: transparent;
+  text-align: center;
 }
 
 #controls {
@@ -14,7 +9,20 @@ body {
   text-align: center;
 }
 
+#play-pause, #tick, #init, #clear {
+  font-size: 1.5em;
+  border: none;
+  background-color: transparent;
+}
+
 #game-of-life {
   display: block;
   margin: 16px auto;
+}
+
+#fps {
+  display: inline-block;
+  margin: 16px auto;
+  white-space: pre;
+  font-family: monospace;
 }
