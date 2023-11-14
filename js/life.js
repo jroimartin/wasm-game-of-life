@@ -192,7 +192,7 @@ export class GameOfLife {
   }
 
   #getIndex(row, column) {
-    let idx = row * this.#universeWidth + column;
+    const idx = row * this.#universeWidth + column;
     return {
       nbyte: Math.floor(idx / 8),
       nbit: idx % 8,
