@@ -123,6 +123,9 @@ impl Universe {
     }
 
     pub fn tick(&mut self) {
+        #[cfg(debug_assertions)]
+        let _timer = debug::Timer::new("Universe::tick");
+
         let prev = self.clone();
         for row in 0..self.height {
             for col in 0..self.width {
@@ -162,14 +165,37 @@ pub fn main_js() -> Result<(), JsValue> {
     #[cfg(debug_assertions)]
     console_error_panic_hook::set_once();
 
+    #[cfg(debug_assertions)]
     log!("wasm-game-of-life");
 
     Ok(())
 }
 
-#[macro_export]
-macro_rules! log {
-    ($($args:tt)*) => {
-        web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!($($args)*)))
-    };
+#[cfg(debug_assertions)]
+mod debug {
+    pub struct Timer {
+        name: String,
+    }
+
+    impl Timer {
+        pub fn new<N: AsRef<str>>(name: N) -> Timer {
+            web_sys::console::time_with_label(name.as_ref());
+            Timer {
+                name: name.as_ref().to_owned(),
+            }
+        }
+    }
+
+    impl Drop for Timer {
+        fn drop(&mut self) {
+            web_sys::console::time_end_with_label(self.name.as_ref())
+        }
+    }
+
+    #[macro_export]
+    macro_rules! log {
+        ($($args:tt)*) => {
+            web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!($($args)*)))
+        };
+    }
 }
